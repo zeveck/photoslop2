@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Photoslop 2 — Photoshop-style editing with AI, in your browser</title>
+<meta name="description" content="Free browser-based photo editor: crop, resize, text and shapes, plus AI heal, generative expand and background removal using your own OpenAI or Gemini keys.">
+<link rel="canonical" href="https://photoslop2.synapticnoise.com/">
+<meta name="theme-color" content="#1e1f22">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🖌️</text></svg>">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://photoslop2.synapticnoise.com/">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="Photoslop 2 — Photoshop-style editing with AI, in your browser">
+<meta property="og:description" content="Free browser-based photo editor: crop, resize, text and shapes, plus AI heal, generative expand and background removal using your own OpenAI or Gemini keys.">
+<meta property="og:image" content="https://photoslop2.synapticnoise.com/social-card.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Photoslop 2 wordmark over a dark editor canvas with a red heal-brush stroke and a marching-ants selection">
+<meta property="og:site_name" content="Photoslop 2">
+
+<!-- Twitter/X -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Photoslop 2 — Photoshop-style editing with AI, in your browser">
+<meta name="twitter:description" content="Free browser-based photo editor: crop, resize, text and shapes, plus AI heal, generative expand and background removal using your own OpenAI or Gemini keys.">
+<meta name="twitter:image" content="https://photoslop2.synapticnoise.com/social-card.jpg">
+<meta name="twitter:image:alt" content="Photoslop 2 wordmark over a dark editor canvas with a red heal-brush stroke and a marching-ants selection">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Photoslop 2",
+  "url": "https://photoslop2.synapticnoise.com/",
+  "description": "Browser-based photo editor with Photoshop-style tools plus AI heal, generative expand and background removal via user-supplied OpenAI or Gemini API keys.",
+  "applicationCategory": "DesignApplication",
+  "operatingSystem": "Any (web browser)",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "author": { "@type": "Person", "name": "Rich Carlson", "url": "https://github.com/zeveck" }
+}
+</script>
+
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<header id="topbar">
+  <div class="brand">Photoslop</div>
+  <div class="topbar-group">
+    <button id="btn-open" title="Open image (Ctrl+O)">Open</button>
+    <button id="btn-save" title="Export (Ctrl+S)">Export</button>
+  </div>
+  <div class="topbar-group">
+    <button id="btn-undo" title="Undo (Ctrl+Z)" disabled>⟲ Undo</button>
+    <button id="btn-redo" title="Redo (Ctrl+Y)" disabled>⟳ Redo</button>
+  </div>
+  <div class="topbar-group">
+    <button id="btn-resize" title="Resize image">Resize</button>
+  </div>
+  <div class="topbar-spacer"></div>
+  <div id="spend-counter" title="AI spend this session (estimate)"></div>
+  <button id="btn-keys" title="API keys &amp; settings">⚙ Keys</button>
+</header>
+
+<div id="main">
+  <nav id="toolbar">
+    <button class="tool" data-tool="move"   title="Move / Select (V)">⬚</button>
+    <button class="tool" data-tool="crop"   title="Crop (C)">⛶</button>
+    <button class="tool" data-tool="transform" title="Rotate / Straighten (R)">↻</button>
+    <div class="tool-sep"></div>
+    <button class="tool" data-tool="brush"  title="Brush (B)">🖌</button>
+    <button class="tool" data-tool="shape"  title="Shapes &amp; arrows (U)">▱</button>
+    <button class="tool" data-tool="text"   title="Text (T)">T</button>
+    <div class="tool-sep"></div>
+    <button class="tool ai" data-tool="heal"    title="Heal — paint over blemishes, AI fills (J)">✚</button>
+    <button class="tool ai" data-tool="expand"  title="Generative expand (X)">⇲</button>
+    <button class="tool ai" data-tool="bgremove" title="Remove background (K)">☒</button>
+    <button class="tool ai" data-tool="generate" title="Generate in region / add asset (G)">✦</button>
+  </nav>
+
+  <div id="canvas-area">
+    <div id="drop-hint">
+      <div class="drop-hint-inner">
+        <p><strong>Drop an image</strong>, paste from clipboard,</p>
+        <p>or <button id="btn-open2">open a file</button></p>
+      </div>
+    </div>
+    <div id="canvas-wrap"><canvas id="c"></canvas></div>
+  </div>
+
+  <aside id="sidebar">
+    <section id="tool-options">
+      <h3 id="tool-options-title">Tool</h3>
+      <div id="tool-options-body"><p class="hint">Open an image to begin.</p></div>
+    </section>
+    <section id="candidates-panel" hidden>
+      <h3>Results <span id="candidates-count"></span></h3>
+      <div id="candidates-body"></div>
+      <div class="row">
+        <button id="btn-more-candidates">＋ More options</button>
+        <button id="btn-cancel-candidates" class="secondary">Discard</button>
+      </div>
+    </section>
+    <section id="history-panel">
+      <h3>AI history</h3>
+      <div id="history-body"><p class="hint">AI results from this session appear here.</p></div>
+    </section>
+  </aside>
+</div>
+
+<footer id="statusbar">
+  <span id="status-dims"></span>
+  <span id="status-zoom"></span>
+  <span id="status-pos"></span>
+  <span id="status-hint"></span>
+</footer>
+
+<!-- Dialogs -->
+<dialog id="dlg-resize">
+  <form method="dialog">
+    <h3>Resize image</h3>
+    <div class="grid2">
+      <label>Width <input type="number" id="rs-w" min="1" max="16384"></label>
+      <label>Height <input type="number" id="rs-h" min="1" max="16384"></label>
+      <label class="span2 chk"><input type="checkbox" id="rs-lock" checked> Lock aspect ratio</label>
+      <label class="span2">Percent <input type="number" id="rs-pct" value="100" min="1" max="1000" step="1"> %</label>
+    </div>
+    <p class="hint">High-quality Lanczos resample (pica).</p>
+    <div class="row right">
+      <button value="cancel" class="secondary">Cancel</button>
+      <button value="ok" id="rs-ok" class="primary">Resize</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-export">
+  <form method="dialog">
+    <h3>Export</h3>
+    <div class="grid2">
+      <label class="span2">Filename <input type="text" id="ex-name" value="image"></label>
+      <label>Format
+        <select id="ex-format">
+          <option value="image/png">PNG</option>
+          <option value="image/jpeg">JPEG</option>
+          <option value="image/webp">WebP</option>
+        </select>
+      </label>
+      <label id="ex-quality-wrap">Quality <input type="range" id="ex-quality" min="1" max="100" value="90"> <span id="ex-quality-val">90</span></label>
+      <label>Width <input type="number" id="ex-w" min="1" max="16384"></label>
+      <label>Height <input type="number" id="ex-h" min="1" max="16384"></label>
+    </div>
+    <p class="hint" id="ex-note"></p>
+    <div class="row right">
+      <button value="cancel" class="secondary">Cancel</button>
+      <button value="ok" id="ex-ok" class="primary">Download</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-keys">
+  <form method="dialog">
+    <h3>API keys &amp; settings</h3>
+    <p class="hint">Keys are stored only in this browser (localStorage) and sent only to the provider's API.</p>
+    <label class="block">OpenAI API key <input type="password" id="key-openai" placeholder="sk-..." autocomplete="off"></label>
+    <label class="block">Gemini API key <input type="password" id="key-gemini" placeholder="AIza..." autocomplete="off"></label>
+    <label class="block chk"><input type="checkbox" id="opt-mock"> Mock mode (no API calls, fake results — for testing)</label>
+    <div class="row right">
+      <button value="cancel" class="secondary">Cancel</button>
+      <button value="ok" id="keys-ok" class="primary">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<input type="file" id="file-input" accept="image/*" hidden>
+
+<script src="vendor/fabric.min.js"></script>
+<script src="vendor/pica.min.js"></script>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

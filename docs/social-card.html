@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin: 0; box-sizing: border-box; }
+  body {
+    width: 1200px; height: 630px; overflow: hidden; position: relative;
+    background: #1e1f22;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: #fff;
+  }
+  /* transparency checkerboard backdrop */
+  .checker {
+    position: absolute; inset: 0;
+    background:
+      repeating-conic-gradient(#2a2b2f 0% 25%, #232428 0% 50%) 0 0 / 56px 56px;
+    opacity: .8;
+  }
+  /* vivid "photo" canvas, slightly rotated like a placed layer */
+  .photo {
+    position: absolute; left: 620px; top: 90px; width: 560px; height: 470px;
+    transform: rotate(4deg);
+    border-radius: 14px;
+    background:
+      radial-gradient(120% 90% at 85% 10%, #ff2d78 0%, transparent 55%),
+      radial-gradient(120% 110% at 10% 15%, #2451ff 0%, transparent 60%),
+      radial-gradient(130% 120% at 30% 95%, #00e58f 0%, transparent 60%),
+      linear-gradient(135deg, #3b1f7a, #128b8b);
+    box-shadow: 0 30px 70px rgba(0,0,0,.55);
+  }
+  /* red heal-brush squiggle on the photo */
+  .heal {
+    position: absolute; left: 700px; top: 240px; width: 360px; height: 160px;
+    transform: rotate(4deg);
+  }
+  /* marching-ants selection rect on the photo */
+  .ants {
+    position: absolute; left: 780px; top: 400px; width: 260px; height: 120px;
+    transform: rotate(4deg);
+    border: 3px dashed rgba(255,255,255,.95);
+    border-radius: 4px;
+    box-shadow: 0 0 0 3px rgba(0,0,0,.25);
+  }
+  .wordmark {
+    position: absolute; left: 70px; top: 150px; z-index: 3;
+  }
+  .wordmark h1 {
+    font-size: 108px; font-weight: 900; letter-spacing: -3px; line-height: .95;
+    text-shadow: 0 8px 30px rgba(0,0,0,.6);
+  }
+  .wordmark h1 .two {
+    display: inline-block;
+    background: #ff3c3c;
+    border-radius: 18px;
+    padding: 0 22px;
+    margin-left: 10px;
+    transform: rotate(-6deg) translateY(-6px);
+    box-shadow: 0 10px 24px rgba(255,60,60,.35);
+  }
+  .tag {
+    margin-top: 34px;
+    font-size: 40px; font-weight: 600; color: #dcdee3;
+    max-width: 560px; line-height: 1.25;
+  }
+  .tag b { color: #b07cff; }
+  .cursor { color: #ff3c3c; }
+  .url {
+    position: absolute; left: 70px; bottom: 52px;
+    font-size: 30px; font-weight: 700; color: #4f8cff;
+    letter-spacing: .5px; z-index: 3;
+  }
+  .badge {
+    position: absolute; right: 46px; bottom: 40px; z-index: 3;
+    font-size: 22px; font-weight: 600; color: #9a9da5;
+    background: rgba(43,45,49,.9);
+    border: 1px solid #3f4147;
+    padding: 10px 18px; border-radius: 999px;
+  }
+  .badge b { color: #dcdee3; }
+</style>
+</head>
+<body>
+  <div class="checker"></div>
+  <div class="photo"></div>
+  <svg class="heal" viewBox="0 0 360 160">
+    <path d="M30 110 C 90 30, 150 140, 210 70 S 320 60, 335 45"
+      fill="none" stroke="rgba(255,60,60,.85)" stroke-width="46" stroke-linecap="round"/>
+  </svg>
+  <div class="ants"></div>
+  <div class="wordmark">
+    <h1>Photoslop<span class="two">2</span></h1>
+    <div class="tag">Photoshop-ish editing in your browser<span class="cursor">▮</span><br>
+      now with <b>AI heal, expand &amp; cut-out</b></div>
+  </div>
+  <div class="url">photoslop2.synapticnoise.com</div>
+  <div class="badge">a <b>Claude Fable 5</b> one-shot</div>
+</body>
+</html>

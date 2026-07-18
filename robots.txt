@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://photoslop2.synapticnoise.com/sitemap.xml
